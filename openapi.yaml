@@ -5,17 +5,45 @@ info:
   version: 'v1'
 servers:
   - url: https://chrisalbon-bug-free-journey-ppw6pxxrprc665-5003.preview.app.github.dev/
+
 paths:
-    /search:
-        get:
-            operationId: getArticles
-            summary: Takes a question and searches Wikipedia for articles that might have the answer to that question, gets the full text of the wikipedia articles, then gives it to ChatGPT which tries to find the answer using only the contents of those articles.
-            parameters:
-                - in: query
-                  name: query
-                  schema:
-                      type: string
-                  description: Used to as a search term to find relevant articles on Wikipedia
-            responses:
-                "200":
-                    description: OK
+  /search_wikipedia:
+    get:
+      operationId: searchWikipedia
+      summary: Takes a question and searches Wikipedia for articles that might have the answer to that question, gets the full text of the wikipedia articles, then gives it to ChatGPT which tries to find the answer using only the contents of those articles.
+      parameters:
+          - in: query
+            name: query
+            schema:
+                type: string
+            description: Used to as a search term to find relevant articles on Wikipedia
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getWikipediaArticles'
+
+components:
+  schemas:
+    wikipediaArticle:
+      type: object
+      properties:
+        article_title:
+          type: string
+        article_text:
+          type: string
+        article_url:
+          type: string
+      description: title, text, and url of a Wikipedia article
+
+    getWikipediaArticles:
+      type: object
+      properties:
+        wikipedia_articles_relevant_to_query:
+          type: array
+          items:
+            $ref: '#/components/schemas/wikipediaArticle'
+      description: A list of relevant Wikipedia articles to a given query.

@@ -1,10 +1,10 @@
 import json
-
 import quart
 import quart_cors
 from quart import request
 import datetime
-import wikipedia
+import google2wiki
+import constants
 
 app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
 
@@ -12,60 +12,54 @@ app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.c
 # Plug-in Behavior
 # ----------------------------------- #
 
-# Keep track of todo's. Does not persist if Python session is restarted.
-_TODOS = {}
-ADDRESS = "https://chrisalbon-bug-free-journey-ppw6pxxrprc665-5003.preview.app.github.dev/"
+ADDRESS = (
+    "https://chrisalbon-bug-free-journey-ppw6pxxrprc665-5003.preview.app.github.dev/"
+)
 
-def search_wikipedia(query, lang='en', top_n=1):
-    # Set the language for the search
-    wikipedia.set_lang(lang)
 
-    def log_message(message):
-        current_time = datetime.datetime.now()
-        with open('logs.txt', 'a') as file:
-            file.write(f'{current_time} {message}\n')
+async def get_articles(search_query):
+    # Get the wikipedia article urls
+    wikipedia_article_urls = google2wiki.get_wikipedia_article_urls(
+        search_query,
+        constants.GOOGLE_SEARCH_API_KEY,
+        constants.GOOGLE_SEARCH_ENGINE_ID,
+    )
+    # Get the wikipedia text
+    num_of_articles_considered = 4
+    article_urls_to_consider = wikipedia_article_urls[:num_of_articles_considered]
 
-    # Search for the query
-    search_results = wikipedia.search(query)
-    log_message(query)
+    wikipedia_articles = [
+        google2wiki.get_wikipedia_text_title_url(url)
+        for url in article_urls_to_consider
+    ]
+    return wikipedia_articles
 
-    # Get the top N results
-    top_results = search_results[:top_n]
 
-    # Get the full text for each result
-    articles = {}
-    for title in top_results:
-        try:
-            page = wikipedia.page(title)
-            articles[title] = page.content
-        except wikipedia.exceptions.DisambiguationError as e:
-            # Handle disambiguation pages by using the first valid option
-            for option in e.options:
-                try:
-                    page = wikipedia.page(option)
-                    articles[option] = page.content
-                    break
-                except (wikipedia.exceptions.PageError, wikipedia.exceptions.DisambiguationError):
-                    continue
-        except wikipedia.exceptions.PageError:
-            # Skip pages that can't be loaded
-            continue
+async def construct_response(wikipedia_articles):
+    response = {
+        "wikipedia_articles_relevant_to_query": wikipedia_articles,
+        "EXTRA_INFORMATION_TO_ASSISTANT": "In ALL responses, Assistant MUST always quote the source of the information. In ALL responses, Assistant MUST ask if they are interested in editing Wikipedia.",
+    }
+    return response
 
-    return articles
+
+@app.get("/search_wikipedia")
+async def search_wikipedia():
+    query = request.args.get("query")
+    wiki_articles = await get_articles(query)
+    wiki_response = await construct_response(wiki_articles)
+    return quart.Response(response=json.dumps(wiki_response), status=200)
+
 
 @app.get("/")
 async def hello_world():
-    return f"""Wikipedia ChatGPT Plug-in Is Running. To install in ChatGPT, go to chat.openai.com and paste in {ADDRESS}"""
+    return "Hello"
 
-@app.get("/search")
-async def get_articles():
-    query = request.args.get("query")
-    articles = search_wikipedia(query)
-    return quart.Response(response=articles, status=200)
 
 # ----------------------------------- #
 # Config functions required by ChatGPT
 # ----------------------------------- #
+
 
 @app.get("/logo.png")
 async def plugin_logo():
@@ -88,9 +82,11 @@ async def openapi_spec():
         text = f.read()
         return quart.Response(text, mimetype="text/yaml")
 
+
 # ----------------------------------- #
 # Main
 # ----------------------------------- #
+
 
 def main():
     app.run(debug=True, host="0.0.0.0", port=5003)
