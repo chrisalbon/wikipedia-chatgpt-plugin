@@ -85,7 +85,11 @@ def get_wikipedia_text_title_url(url: str, paragraph_number: int = 12) -> str:
     pattern = r"\[\d+\]"
     text = re.sub(pattern, "", text)
 
-    title = soup.select("span.mw-page-title-main")[0].text
+    try:
+        title = soup.select("span.mw-page-title-main")[0].text
+    except IndexError:
+        # If an IndexError occurs, set the title to an empty string
+        title = ""
 
     response = {"article_title": title, "article_text": text, "article_url": url}
 
