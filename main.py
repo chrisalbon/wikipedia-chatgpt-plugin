@@ -13,7 +13,7 @@ app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.c
 # ----------------------------------- #
 
 ADDRESS = (
-    "https://chrisalbon-bug-free-journey-ppw6pxxrprc665-5003.preview.app.github.dev/"
+    "https://chrisalbon-supreme-telegram-9j5xjpvpxgfxxqr-5003.preview.app.github.dev/"
 )
 
 

@@ -4,7 +4,7 @@ info:
   description: Use this plugin for information about recent news, history, science, and art.  Most valuable for general knowledge queries.
   version: 'v1'
 servers:
-  - url: https://chrisalbon-bug-free-journey-ppw6pxxrprc665-5003.preview.app.github.dev/
+  - url: https://chrisalbon-supreme-telegram-9j5xjpvpxgfxxqr-5003.preview.app.github.dev/
 
 paths:
   /search_wikipedia:

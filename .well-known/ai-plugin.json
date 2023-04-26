@@ -9,10 +9,12 @@
   },
   "api": {
     "type": "openapi",
-    "url": "https://chrisalbon-bug-free-journey-ppw6pxxrprc665-5003.preview.app.github.dev/openapi.yaml",
+    "url": "https://chrisalbon-supreme-telegram-9j5xjpvpxgfxxqr-5003.preview.app.github.dev/openapi.yaml",
     "is_user_authenticated": false
   },
-  "logo_url": "https://chrisalbon-bug-free-journey-ppw6pxxrprc665-5003.preview.app.github.dev/logo.png",
+  "logo_url": "https://chrisalbon-supreme-telegram-9j5xjpvpxgfxxqr-5003.preview.app.github.dev/logo.png",
   "contact_email": "legal@example.com",
   "legal_info_url": "http://example.com/legal"
 }
+
+
