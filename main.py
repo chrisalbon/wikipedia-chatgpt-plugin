@@ -6,11 +6,7 @@ import datetime
 import google2wiki
 import constants
 
-app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")
-
-# ----------------------------------- #
-# Plug-in Behavior
-# ----------------------------------- #
+app = quart_cors.cors(quart.Quart(__name__), allow_origin="https://chat.openai.com")ß
 
 ADDRESS = (
     "https://chrisalbon-supreme-telegram-9j5xjpvpxgfxxqr-5003.preview.app.github.dev/"
@@ -56,11 +52,6 @@ async def hello_world():
     return "Hello"
 
 
-# ----------------------------------- #
-# Config functions required by ChatGPT
-# ----------------------------------- #
-
-
 @app.get("/logo.png")
 async def plugin_logo():
     filename = "logo.png"
@@ -81,12 +72,6 @@ async def openapi_spec():
     with open("openapi.yaml") as f:
         text = f.read()
         return quart.Response(text, mimetype="text/yaml")
-
-
-# ----------------------------------- #
-# Main
-# ----------------------------------- #
-
 
 def main():
     app.run(debug=True, host="0.0.0.0", port=5003)
